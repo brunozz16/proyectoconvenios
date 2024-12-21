@@ -1,96 +1,46 @@
 <template>
-  <div class="inteligencia-container" id="id3">
-    <div class="inteligencia-menu">
-      <h1>GEMINI AI (INTELIGENCIA ARTIFICIAL)</h1>
+  <div class="inteligencia-container" id="idInteligencia">
+    <div class="inteligencia-header">
+      <h1>GEMINI AI</h1>
       <p>Total tokens usados: {{ totalTokensUsed }}</p>
     </div>
-    <div class="inteligencia-contenido">
-      <input
-        type="number"
-        class="inteligencia-input-nro"
-        id="nroconvenio"
-        v-model="prompt"
-        placeholder="Ingresa el número de convenio aquí"
-        
-      />
-      <input
-        type="text"
-        class="inteligencia-input"
-        v-model="pregunta"
-        placeholder="Ingresa tu pregunta aquí"
-      />
-      <button class="inteligencia-boton-buscar" @click="handleGenerateText">
-        Realizar consulta
+
+    <div class="inteligencia-form">
+      <div class="form-group">
+        <label for="nroconvenio">Número de Convenio</label>
+        <input
+          type="number"
+          id="nroconvenio"
+          v-model="prompt"
+          placeholder="Ingresa el número de convenio"
+          class="form-control"
+        />
+      </div>
+      <div class="form-group">
+        <label for="pregunta">Pregunta</label>
+        <input
+          type="text"
+          id="pregunta"
+          v-model="pregunta"
+          placeholder="Ingresa tu pregunta"
+          class="form-control"
+        />
+      </div>
+      <button @click="handleGenerateText" class="btn btn-primary">
+        Realizar Consulta
       </button>
     </div>
-    <div class="inteligencia-resultados" id="div-busqueda">
+
+    <div class="inteligencia-resultados" v-if="generatedText || textoAuxiliar">
       <h5>{{ generatedText }}</h5>
       <h4>{{ textoAuxiliar }}</h4>
     </div>
   </div>
 </template>
 
-<style scoped>
-.inteligencia-container {
-  width: 100%;
-  height: 100vh;
-  background-color: aliceblue;
-}
-
-.inteligencia-menu {
-  width: 100%;
-  height: 10vh;
-  background: linear-gradient(to right, #ff5020, #ff7e10, #ffa311, #ffb411);
-  color: #494963;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid black;
-}
-
-.inteligencia-contenido {
-  width: 100%;
-  height: 50vh;
-  background-color: cadetblue;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.inteligencia-input {
-  width: 50%;
-  height: 8vh;
-  margin-bottom: 10px;
-}
-.inteligencia-input-nro {
-  width: 50%;
-  height: 8vh;
-  margin-bottom: 10px;
-  border: 3px solid red;
-}
-
-.inteligencia-boton-buscar {
-  background-color: chartreuse;
-  padding: 10px;
-  border-radius: 5px;
-  margin: 5px;
-}
-
-.inteligencia-boton-buscar:hover {
-  background-color: #494963;
-  color: aliceblue;
-}
-
-.inteligencia-resultados {
-  margin-top: 20px;
-  text-align: center;
-}
-</style>
-
 <script>
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import axios from "axios";
+import convenioService from "@/services/convenioService";
+import aiClient from "@/services/aiClient";
 
 export default {
   data() {
@@ -99,82 +49,110 @@ export default {
       pregunta: "",
       generatedText: "Esperando consulta...",
       textoAuxiliar: "...",
-      apiKey: "AIzaSyCNsQ9jlmRZolPtk6as5thYG84d8KrwPYI",
       totalTokensUsed: 0,
       arregloconvenios: [],
     };
   },
-  mounted(){
-    this.checkConvenio();
+  async mounted() {
+    this.arregloconvenios = await convenioService.fetchConvenios();
   },
   methods: {
-    // Método para obtener convenios y buscar el PDF asociado
-    async fetchLink() {
-      try {
-        const { data: convenios } = await axios.get("http://localhost:3000/listaconvenios");
-        this.arregloconvenios = convenios.map(convenio => convenio.numero);
-
-        const { data } = await axios.get(`http://localhost:3000/convenios/${this.prompt}`);
-        const { pdf } = data[0];
-        this.generatedText = "pdf: " + pdf;
-      } catch (error) {
-        console.error("Error al obtener el convenio:", error);
-      }
-    },
-
-    // Método para generar texto usando la IA
-    async generateTextUsingAI() {
-      const genAI = new GoogleGenerativeAI(this.apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-      try {
-        const consulta = await model.generateContent(
-          `Tengo este convenio: '${this.generatedText}'. Respóndeme a la siguiente pregunta: ${this.pregunta}`
-        );
-        this.generatedText = consulta.response.text();
-      } catch (error) {
-        console.error("Error al generar el texto:", error);
-        this.generatedText = "Tokens agotados!";
-      }
-    },
-
-    // Método principal para manejar la generación del texto
     async handleGenerateText() {
-      if (this.prompt === "" || this.pregunta === "") {
-        alert("Debes llenar los campos");
+      if (!this.prompt || !this.pregunta) {
+        alert("Por favor, llena todos los campos");
         return;
       }
 
-      await this.fetchLink();
-      const miElemento = document.getElementById('id3');
-      const miNroConvenio = document.getElementById('nroconvenio')
-
-      if (this.arregloconvenios.includes(this.prompt)) {
-        this.textoAuxiliar = "";
-        miNroConvenio.style.borderColor = 'green'
-        miElemento.style.backgroundColor = 'green';
-        await this.generateTextUsingAI();
-      } else {
-        this.textoAuxiliar = "";
+      if (!this.arregloconvenios.includes(Number(this.prompt))) {
         this.generatedText = "Convenio no encontrado";
-        miElemento.style.backgroundColor = 'red';
-        alert("debe asegurarse de que el convenio se encuentre cargado en el sistema")
+        alert("El convenio no está registrado en el sistema");
+        return;
+      }
+
+      try {
+        const pdf = await convenioService.getConvenioPDF(this.prompt);
+        this.generatedText = await aiClient.generateResponse(pdf, this.pregunta);
+      } catch (error) {
+        this.generatedText = "Error al procesar la consulta";
       }
     },
-
-    async checkConvenio(){
-      if(this.prompt==12){
-        alert("nro 12")
-      }
-      const miNroConvenio = document.getElementById('nroconvenio')
-
-      if (this.arregloconvenios.includes(this.prompt)) {
-        miNroConvenio.style.borderColor = 'green'
-        
-      } else {
-        miNroConvenio.style.borderColor = 'red'
-      }
-    }
   },
 };
 </script>
+
+<style scoped>
+.inteligencia-container {
+  max-width: 50%;
+  height: 50vh;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.inteligencia-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.inteligencia-header h1 {
+  font-size: 24px;
+  color: #343a40;
+}
+
+.inteligencia-form {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.inteligencia-resultados {
+  text-align: center;
+  padding: 10px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+}
+
+.inteligencia-resultados h5 {
+  font-size: 16px;
+  color: #495057;
+}
+
+.inteligencia-resultados h4 {
+  font-size: 18px;
+  color: #212529;
+  font-weight: bold;
+}
+</style>

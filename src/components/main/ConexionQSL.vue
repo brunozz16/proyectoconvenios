@@ -1,56 +1,43 @@
 <template>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
 
-  <div v-if="convenios.length">
-    <div class="convenios-menu" id="id1">
-      <h1>LISTA DE CONVENIOS ({{ totalConvenios }})</h1>
-    </div>
+  <div id="idConvenios">
+    <div v-if="convenios.length">
+      <header class="convenios-header">
+        <h1>Convenios Disponibles</h1>
+        <p>Total de convenios: <strong>{{ totalConvenios }}</strong></p>
+      </header>
 
-    <div class="convenios-search">
-      
-      <input type="text" placeholder="buscar..." v-model="busqueda" @input="buscar" style="margin-right: 5px;"/>
-      
-      <input type="text" placeholder="segundo criterio..." v-if="boton" v-model="busquedados" @input="buscar"/>
-    </div>
-
-    <div class="container">
-      <div class="item" v-for="convenio in resultados" :key="convenio.numero">
-        <ConvenioCard
-          :convenioTitle="convenio.numero"
-          :convenioContent="convenio.descripcion"
-          :state="convenio.estado"
-        />
+      <div class="convenios-search">
+        <input type="text" class="search-input" placeholder="Buscar por primer criterio..." v-model="busqueda"
+          @input="buscar" />
+        <input v-if="boton" type="text" class="search-input" placeholder="Buscar por segundo criterio..."
+          v-model="busquedados" @input="buscar" />
       </div>
-    </div>
-  </div>
 
-  <div v-else>
-    <div class="d-flex gap-2 justify-content-center py-5">
-      <button class="btn btn-primary" type="button" disabled="">
-        <span
-          class="spinner-border spinner-border-sm"
-          aria-hidden="true"
-        ></span>
-        <span role="status"
-          ><font style="vertical-align: inherit"
-            ><font style="vertical-align: inherit">
-              Cargando Convenios...</font
-            ></font
-          ></span
-        >
-      </button>
+      <section class="convenios-list">
+        <div v-for="convenio in resultados" :key="convenio.numero" class="convenio-item">
+          <ConvenioCard :convenioTitle="convenio.numero" :convenioContent="convenio.descripcion"
+            :state="convenio.estado" />
+        </div>
+      </section>
+    </div>
+
+    <div v-else class="loading-container">
+      <div class="spinner-wrapper">
+        <span class="spinner"></span>
+        <p>Cargando convenios, por favor espera...</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import ConvenioCard from "./ConvenioCard.vue";
-import axios from "axios";
+import { fetchConvenios, fetchCantidadConvenios, buscarConvenios } from "@/services/convenioService";
 
 export default {
   components: {
@@ -60,222 +47,118 @@ export default {
     return {
       convenios: [],
       totalConvenios: 0,
-      totalFechas: [],
-      prueba: 0,
-      prendido: "prendido",
       busqueda: "",
-      busquedados:"",
+      busquedados: "",
       resultados: [],
-      boton:false
+      boton: false,
     };
   },
   mounted() {
-    this.fetchConvenios();
-    this.fetchCantidadConvenios();
-    this.fetchFechasConvenios();
-    this.buscar();
-  },
-  computed: {
-    /*filteredConvenios() {
-      return this.convenios.filter(convenio => {
-        const numeroComoCadena = String(convenio.numero);
-        return !this.searchInput || numeroComoCadena === this.searchInput;
-      });
-    }*/
+    this.initializeData();
   },
   methods: {
-    fetchConvenios() {
-      axios
-        .get("http://localhost:3000/convenios")
-        .then((response) => {
-          this.convenios = response.data;
-          this.resultados = response.data;
-          //this.resultados=this.convenios;
-          console.log(this.convenios);
-        })
-        .catch((error) => {
-          console.error("Error en retornar convenios:", error);
-        });
-    },
-    buscar() {
-      // Aquí realiza la búsqueda
-      // Si el primer criterio esta vacio
-      if (this.busqueda == "") {
-        this.boton=false;
-        this.busquedados="";
-        this.limpiarBusqueda();
-
-      } else { // entra aqui si el primer criterio tiene datos
-        this.resultados=[];
-        this.boton=true;
-
-        // si el segundo criterio esta vacio
-        if(this.busquedados == ""){
-        axios
-          .get(`http://localhost:3000/busqueda?busqueda=${this.busqueda}`)
-          .then((response) => {
-            this.resultados = response.data;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-        }else{
-          //alert("segundo campo");
-          //this.busquedados="";
-          axios
-          .get(`http://localhost:3000/busqueda?busqueda=${this.busquedados}`)
-          .then((response) => {
-            this.resultados = response.data;
-
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-        }
+    async initializeData() {
+      try {
+        this.convenios = await fetchConvenios();
+        this.resultados = [...this.convenios];
+        this.totalConvenios = await fetchCantidadConvenios();
+      } catch (error) {
+        console.error("Error al inicializar datos:", error);
       }
     },
-    buscarConvenios(id) {
-      axios
-        .get(`http://localhost:3000/convenios/${id}`)
-        .then((response) => {
-          this.convenios = response.data;
-        })
-        .catch((error) => {
-          console.error("Error fetching convenios:", error);
-        });
+    async buscar() {
+      if (!this.busqueda) {
+        this.boton = false;
+        this.busquedados = "";
+        this.resultados = [...this.convenios];
+        return;
+      }
+
+      this.boton = true;
+      try {
+        this.resultados = await buscarConvenios(this.busquedados || this.busqueda);
+      } catch (error) {
+        console.error("Error en búsqueda:", error);
+      }
     },
-    fetchCantidadConvenios() {
-      axios
-        .get("http://localhost:3000/cantidad")
-        .then((response) => {
-          //const { count } = response.data[0];
-          this.totalConvenios = response.data[0]["COUNT(*)"];
-        })
-        .catch((error) => {
-          console.error("Error al obtener el total de convenios:", error);
-        });
-    },
-    fetchFechasConvenios() {
-      axios
-        .get("http://localhost:3000/fechas")
-        .then((response) => {
-          //const { count } = response.data[0];
-          this.totalFechas = response.data;
-        })
-        .catch((error) => {
-          console.error("Error al obtener el total de convenios:", error);
-        });
-    },
-    fetchFechasConvenios6() {
-      axios
-        .get("http://localhost:3000/estadisticas")
-        .then((response) => {
-          const { totalultimoanio } = response.data[0]; // Acceder a "totalultimoanio"
-          this.prueba = totalultimoanio;
-        })
-        .catch((error) => {
-          console.error("Error al obtener el total de convenios:", error);
-        });
-    },
-    limpiarBusqueda(){
-      this.resultados=[];
-      //this.fetchConvenios();
-      axios
-          .get(`http://localhost:3000/convenios`)
-          .then((response) => {
-            this.resultados = response.data;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-    }
   },
 };
 </script>
 
-<style scoped>
-.btn-grafica-busqueda{
-  background-color: #494963;
-  border: none;
-  margin-right: 3px;
-}
-.container {
-  background-color: #494963;
-  border-radius: 0px 0px 10px 10px;
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-.item {
-  width: 100%;
-  padding: 20px;
-  text-align: left;
-}
-.modal-overlay {
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 101;
-  background-color: rgba(0, 0, 0, 0.658);
-}
-.modal {
-  display: none;
-  /* Ocultamos el modal por defecto */
-  position: fixed;
-  width: 400px;
-  height: 400px;
 
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  border: 1px solid #ff0000;
-  padding: 20px;
-  z-index: 1000;
-  /* Asegura que el modal esté por encima de otros elementos */
+<style scoped>
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f7f7f7;
+  margin: 0;
 }
-.modal1 {
-  position: relative;
-  width: 50%;
-  height: 50vh;
-  color: #17202a;
-  background-color: aliceblue;
+
+.convenios-header {
   text-align: center;
-  top: 25%;
-  left: 25%;
-  border-radius: 20px;
-  font-family: "Inter", sans-serif;
-}
-.btnmodal {
-  position: relative;
-  background-color: aquamarine;
-  bottom: 0;
+  background: linear-gradient(90deg, #ff7e10, #ffa311);
+  padding: 20px;
+  color: white;
   border-radius: 10px;
+  margin-bottom: 20px;
 }
-.convenios-menu {
-  width: 100%;
-  height: 10vh;
-  padding: 5px;
-  background: linear-gradient(to right, #ff5020, #ff7e10, #ffa311, #ffb411);
-  color: #494963;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Inter", sans-serif;
-}
+
 .convenios-search {
-  width: 100%;
-  height: 8vh;
-  background-color: #494963;
-  border-radius: 0px 0px 10px 10px;
-  border: 1px solid black;
   display: flex;
-  align-items: center;
   justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
-.c-search {
-  width: 500px;
+
+.search-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 300px;
+}
+
+.convenios-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+.convenio-item {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.convenio-item:hover {
+  transform: translateY(-5px);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
+.spinner-wrapper {
+  text-align: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #494963;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

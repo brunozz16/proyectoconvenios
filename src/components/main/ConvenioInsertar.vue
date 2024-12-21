@@ -1,148 +1,160 @@
 <template>
-    <div class="insertar-menu" id="id4">
-        <h1>Añadir un convenio</h1>
-    </div>
-    <div class="insertar-formulario">
-        <form @submit.prevent="submitForm" class="insertar-formulario-form">
-            <div class="form-group d-flex flex-row gap-3">
-                <div class="flex-grow-1">
-                    <label for="exampleInputEmail1">Número</label>
-                    <input type="email" v-model="numero" class="form-control" id="exampleInputEmail1"
-                        aria-describedby="emailHelp" placeholder="número...">
-                </div>
-                <div class="flex-grow-1">
-                    <label for="exampleInputPassword1">Norma Legal</label>
-                    <input type="password" v-model="normalegal" class="form-control" id="exampleInputPassword1"
-                        placeholder="norma legal...">
-                </div>
-            </div>
-            <div class="form-group d-flex flex-row gap-3">
-                <div class="flex-grow-1">
-                    <label for="exampleInputPassword1">Descripcion</label>
-                    <input type="password" v-model="descripcion" class="form-control" id="exampleInputPassword1"
-                        placeholder="descripcion...">
-                </div>
-                <div class="flex-grow-1">
-                    <label for="exampleInputPassword1">Fecha (DD/MM/AAAA)</label>
-                    <input type="password" v-model="fecha" class="form-control" id="exampleInputPassword1"
-                        placeholder="fecha...">
-                </div>
-            </div>    
-                <div class="flex-grow-3">
-                    <label for="exampleInputPassword1">Enlace</label>
-                    <input type="password" v-model="enlace" class="form-control" id="exampleInputPassword1"
-                        placeholder="enlace...">
-                </div>
-                <div class="flex-grow-3">
-                    <label for="exampleInputPassword1">Resumen(opcional)</label>
-                    <input type="password" v-model="resumen" class="form-control" id="exampleInputPassword1"
-                        placeholder="resumen...">
-                </div>
-                <div class="flex-grow-4">
-                    <label for="exampleInputPassword1">Pdf (link)</label>
-                    <input type="password" v-model="pdf" class="form-control" id="exampleInputPassword1"
-                        placeholder="pdf...">
-                </div>
-                <div class="flex-grow-4">
-                    <label for="exampleInputPassword1">Estado(opcional)</label>
-                    <input type="password" v-model="estado" class="form-control" id="exampleInputPassword1"
-                        placeholder="estado...">
-                </div>
-    
-            <button type="submit" class="btn btn-success" style="margin-top: 10px;">Enviar</button>
-        </form>
-
-
-    </div>
-
-</template>
-
-<script>
-import axios from 'axios';
-export default {
+    <center><div class="insertar-convenio" id="id4">
+      <h1 class="cabecera">AÑADIR CONVENIO</h1>
+      <form @submit.prevent="submitForm" class="formulario">
+        <div class="campo">
+          <label for="numero">Número:</label>
+          <input type="number" v-model="numero" class="campo-entrada" id="numero" placeholder="Ingrese el número del convenio">
+        </div>
+        <div class="campo">
+          <label for="normalegal">Norma Legal:</label>
+          <input type="text" v-model="normalegal" class="campo-entrada" id="normalegal" placeholder="Ingrese la norma legal asociada">
+        </div>
+        <div class="campo">
+          <label for="descripcion">Descripción:</label>
+          <textarea v-model="descripcion" class="campo-entrada" id="descripcion" rows="4" placeholder="Ingrese una descripción del convenio"></textarea>
+        </div>
+        <div class="campo">
+          <label for="fecha">Fecha (DD/MM/AAAA):</label>
+          <input type="date" v-model="fecha" class="campo-entrada" id="fecha" placeholder="Seleccione la fecha">
+        </div>
+        <div class="campo">
+          <label for="enlace">Enlace:</label>
+          <input type="url" v-model="enlace" class="campo-entrada" id="enlace" placeholder="Ingrese la URL del convenio (opcional)">
+        </div>
+        <div class="campo">
+          <label for="resumen">Resumen (opcional):</label>
+          <textarea v-model="resumen" class="campo-entrada" id="resumen" rows="4" placeholder="Ingrese un resumen del convenio (opcional)"></textarea>
+        </div>
+        <div class="campo">
+          <label for="pdf">Pdf (link):</label>
+          <input type="url" v-model="pdf" class="campo-entrada" id="pdf" placeholder="Ingrese la URL del PDF del convenio (opcional)">
+        </div>
+        <div class="campo">
+          <label for="estado">Estado (opcional):</label>
+          <input type="text" v-model="estado" class="campo-entrada" id="estado" placeholder="Ingrese el estado del convenio (opcional)">
+        </div>
+        <button type="submit" class="boton-enviar">Enviar</button>
+      </form>
+    </div></center>
+  </template>
+  
+  <script>
+  import axios from 'axios';
+  
+  export default {
     data() {
-        return {
-            numero: 0,
-            normalegal: '',
-            descripcion: '',
-            fecha: '',
-            enlace: '',
-            resumen: '',
-            pdf: '',
-            estado: ''
-
-        }
+      return {
+        numero: 0,
+        normalegal: '',
+        descripcion: '',
+        fecha: '',
+        enlace: '',
+        resumen: '',
+        pdf: '',
+        estado: '',
+      };
     },
     methods: {
-        submitForm() {
-            axios.post('http://localhost:3000/insertar', {
-                numero: this.numero,
-                normalegal: this.normalegal,
-                descripcion: this.descripcion,
-                fecha: this.fecha,
-                enlace: this.enlace,
-                resumen: this.resumen,
-                pdf: this.pdf,
-                estado: this.estado
-            })
-                .then(response => {
-                    console.log(response)
-                    alert(response)
-                })
-                .catch(error => {
-                    console.log(error)
-                    alert(error)
-                });
-        }
-    }
-
-}
-</script>
-
-<style scoped>
-.insertar-menu {
-    width: 100%;
-    height: 10vh;
-    padding: 5px;
-    background: linear-gradient(to right, #FF5020, #FF7E10, #FFA311, #FFB411);
-    color: #494963;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid black;
-}
-
-.insertar-formulario {
-    width: 100%;
-    height: 90vh;
-    padding: 5px;
-    background-color: rgb(0, 0, 0);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+      submitForm() {
+        axios.post('http://localhost:3000/insertar', {
+          numero: this.numero,
+          normalegal: this.normalegal,
+          descripcion: this.descripcion,
+          fecha: this.fecha,
+          enlace: this.enlace,
+          resumen: this.resumen,
+          pdf: this.pdf,
+          estado: this.estado,
+        })
+          .then(response => {
+            console.log(response);
+            alert('Convenio añadido exitosamente!'); // Informative success message
+          })
+          .catch(error => {
+            console.error(error);
+            alert('Ocurrió un error al añadir el convenio.'); // Informative error message
+          });
+      },
+    },
+  };
+  </script>
+  
+  <style scoped>
+.insertar-convenio {
+  width: 50%;
+  
+  padding: 2rem;
+  background-color: #f0f0f0; /* Fondo claro para mejor contraste */
+  border-radius: 10px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif; /* Fuente legible y común */
 }
 
-.insertar-formulario-form {
-    height: 85vh;
-    padding: 20px 120px;
-    background-color: #000000;
-    border-radius: 10px;
+.formulario {
+  width: 100%;
+  max-width: 500px; /* Ancho máximo para mejor visualización */
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
 
-    border: 1px solid wheat;
+.campo {
+  margin-bottom: 1rem;
 }
-.flex-grow-1 , .flex-grow-3 , .flex-grow-4{
-    color: wheat;
+
+.campo label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333;
 }
-.form-control{
-    background-color: #000000;
-    color:white ;
-    
-    
+
+.campo-entrada {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease-in-out;
 }
-input::placeholder {
-  color: #666;
-  font-style: italic;
- 
+
+.campo-entrada:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.boton-enviar {
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  font-weight: bold;
+}
+
+.boton-enviar:hover {
+  background-color: #0056b3;
+}
+
+/* Estilos adicionales para mejorar la apariencia */
+.cabecera {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .formulario {
+    max-width: 90%;
+  }
 }
 </style>

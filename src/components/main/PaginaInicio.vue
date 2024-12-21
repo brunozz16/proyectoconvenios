@@ -8,10 +8,10 @@
         </div>
       </div>
       <div class="centerdiv animate__animated animate__slideInLeft">
-        <a class="cards animate__animated" href="#id1">
+        <a class="cards animate__animated" href="#idConvenios">
           <h3>Convenios</h3>
         </a>
-        <a class="cards2 animate__animated" href="#id2">
+        <a class="cards2 animate__animated" href="#idEstadisticas">
           <h3>Estadísticas</h3>
         </a>
       </div>
@@ -21,9 +21,8 @@
     </div>
     <div class="rightprincipal">
       <div class="rightdiv animate__animated animate__slideInRight">
-        <a href="#id4"
-          ><button class="right-button">Insertar Convenio</button></a
-        >
+        <a href="#id4" class="right-button"><i class="fas fa-file-contract" style="margin-right: 5px;"></i> Insertar Convenios</a>
+        <a href="#idInteligencia" class="right-button">Inteligencia Artificial</a>
         <button class="right-button">Borrar Convenio</button>
         <button class="right-button">Editar Convenio</button>
       </div>
@@ -80,19 +79,22 @@ export default {
 }
 
 .right-button {
+  width: 90%;
   margin: 10px;
-  padding: 15px 30px;
+  text-decoration: none;
+  padding: 15px 15px;
   background-color: #15151d;
   color: white;
   border: 1px solid white;
   border-radius: 5px;
   cursor: pointer;
+  display: flex; /* Habilita Flexbox */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
 }
 .right-button:hover {
   margin: 10px;
-  padding: 15px 30px;
   background-color: white;
-
   color: #15151d;
   border: 1px solid white;
   border-radius: 5px;
