@@ -92,7 +92,8 @@ export default {
 <style scoped>
 /* Estilo general */
 .estadisticas-container {
-  background-color: #f8f9fa;
+  height: 100vh;
+  background-color: #15151d;
   padding: 20px;
 }
 

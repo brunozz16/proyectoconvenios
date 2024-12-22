@@ -12,8 +12,8 @@
       </header>
 
       <div class="convenios-search">
-        <input type="text" class="search-input" placeholder="Buscar por primer criterio..." v-model="busqueda"
-          @input="buscar" />
+        <p style="color:greenyellow;">({{ resultados.length }})</p>
+        <input type="text" class="search-input" placeholder="Buscar por primer criterio..." v-model="busqueda" @input="buscar" />
         <input v-if="boton" type="text" class="search-input" placeholder="Buscar por segundo criterio..."
           v-model="busquedados" @input="buscar" />
       </div>
@@ -32,6 +32,7 @@
         <p>Cargando convenios, por favor espera...</p>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -80,8 +81,8 @@ export default {
       } catch (error) {
         console.error("Error en búsqueda:", error);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -105,6 +106,7 @@ body {
 .convenios-search {
   display: flex;
   justify-content: center;
+  align-items: center; /* Centra verticalmente */
   gap: 10px;
   margin-bottom: 20px;
 }

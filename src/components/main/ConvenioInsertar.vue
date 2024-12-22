@@ -1,39 +1,32 @@
 <template>
-    <center><div class="insertar-convenio" id="id4">
-      <h1 class="cabecera">AÑADIR CONVENIO</h1>
+    <center><div class="insertar-convenio animate__animated animate__fadeInUp" id="id4">
       <form @submit.prevent="submitForm" class="formulario">
+        <h4>CARGAR UN CONVENIO</h4>
         <div class="campo">
-          <label for="numero">Número:</label>
           <input type="number" v-model="numero" class="campo-entrada" id="numero" placeholder="Ingrese el número del convenio">
-        </div>
-        <div class="campo">
-          <label for="normalegal">Norma Legal:</label>
           <input type="text" v-model="normalegal" class="campo-entrada" id="normalegal" placeholder="Ingrese la norma legal asociada">
         </div>
+    
         <div class="campo">
-          <label for="descripcion">Descripción:</label>
           <textarea v-model="descripcion" class="campo-entrada" id="descripcion" rows="4" placeholder="Ingrese una descripción del convenio"></textarea>
         </div>
         <div class="campo">
-          <label for="fecha">Fecha (DD/MM/AAAA):</label>
           <input type="date" v-model="fecha" class="campo-entrada" id="fecha" placeholder="Seleccione la fecha">
+          <input type="text" v-model="estado" class="campo-entrada" id="estado" placeholder="Ingrese el estado del convenio (opcional)">
         </div>
         <div class="campo">
-          <label for="enlace">Enlace:</label>
-          <input type="url" v-model="enlace" class="campo-entrada" id="enlace" placeholder="Ingrese la URL del convenio (opcional)">
+          
+          <input type="text" v-model="enlace" class="campo-entrada" id="enlace" placeholder="Ingrese la URL del convenio (opcional)">
         </div>
         <div class="campo">
-          <label for="resumen">Resumen (opcional):</label>
+          
           <textarea v-model="resumen" class="campo-entrada" id="resumen" rows="4" placeholder="Ingrese un resumen del convenio (opcional)"></textarea>
         </div>
         <div class="campo">
-          <label for="pdf">Pdf (link):</label>
-          <input type="url" v-model="pdf" class="campo-entrada" id="pdf" placeholder="Ingrese la URL del PDF del convenio (opcional)">
+          
+          <input type="text" v-model="pdf" class="campo-entrada" id="pdf" placeholder="Ingrese la URL del PDF del convenio (opcional)">
         </div>
-        <div class="campo">
-          <label for="estado">Estado (opcional):</label>
-          <input type="text" v-model="estado" class="campo-entrada" id="estado" placeholder="Ingrese el estado del convenio (opcional)">
-        </div>
+        
         <button type="submit" class="boton-enviar">Enviar</button>
       </form>
     </div></center>
@@ -45,7 +38,7 @@
   export default {
     data() {
       return {
-        numero: 0,
+        numero: '',
         normalegal: '',
         descripcion: '',
         fecha: '',
@@ -75,17 +68,17 @@
             console.error(error);
             alert('Ocurrió un error al añadir el convenio.'); // Informative error message
           });
-      },
-    },
+      }
+    }
   };
   </script>
   
   <style scoped>
 .insertar-convenio {
-  width: 50%;
-  
+  width: 100%;
+  height: 80vh;
   padding: 2rem;
-  background-color: #f0f0f0; /* Fondo claro para mejor contraste */
+  background-color: #000000ae; /* Fondo claro para mejor contraste */
   border-radius: 10px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -97,8 +90,9 @@
 
 .formulario {
   width: 100%;
-  max-width: 500px; /* Ancho máximo para mejor visualización */
-  background-color: #fff;
+  height: 80vh;
+  /* max-width: 500px; Ancho máximo para mejor visualización */
+  background-color: #ffffff00;
   padding: 2rem;
   border-radius: 5px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
@@ -106,6 +100,8 @@
 
 .campo {
   margin-bottom: 1rem;
+  display: flex;
+  gap:10px;
 }
 
 .campo label {

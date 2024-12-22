@@ -13,8 +13,7 @@
     <ConexionSQL/>
     <ConvenioGrafico/>
     
-    <ConvenioInteligencia/>
-    <ConvenioInsertar/>
+   
 
     <div class="container">
   <div class="circle"></div>
@@ -35,8 +34,8 @@ import PaginaInicio from "./main/PaginaInicio.vue";
 //import TituloConvenio from "./main/TituloConvenio.vue";
 import ConexionSQL from "./main/ConexionQSL.vue";
 
-import ConvenioInteligencia from "./inteligencia/ConvenioInteligencia.vue";
-import ConvenioInsertar from "./main/ConvenioInsertar.vue";
+//import ConvenioInteligencia from "./inteligencia/ConvenioInteligencia.vue";
+//import ConvenioInsertar from "./main/ConvenioInsertar.vue";
 
 export default {
     name: "ConvenioConteiner",
@@ -52,8 +51,8 @@ export default {
         //ConvenioBusqueda,
         //TituloConvenio,
         ConexionSQL,
-        ConvenioInteligencia,
-        ConvenioInsertar
+        //ConvenioInteligencia,
+        //ConvenioInsertar
     }
 };
 </script>

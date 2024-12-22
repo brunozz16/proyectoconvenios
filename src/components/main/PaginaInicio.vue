@@ -1,5 +1,7 @@
 <template>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <div class="principal" id="principal">
     <div class="leftprincipal">
       <div class="topdiv animate__animated animate__slideInLeft">
@@ -7,45 +9,76 @@
           <img :src="myImage" alt="Mi imagen" />
         </div>
       </div>
+
+
       <div class="centerdiv animate__animated animate__slideInLeft">
-        <a class="cards animate__animated" href="#idConvenios">
-          <h3>Convenios</h3>
-        </a>
-        <a class="cards2 animate__animated" href="#idEstadisticas">
-          <h3>Estadísticas</h3>
-        </a>
+        <div v-if="showContent==='Inicio'" class="displayInicio">
+          <a class="cards animate__animated" href="#idConvenios">
+            <h3>Convenios</h3>
+          </a>
+          <a class="cards2 animate__animated" href="#idEstadisticas">
+            <h3>Estadísticas</h3>
+          </a>
+        </div>
+        <div v-else-if="showContent==='Insert'" class="displayInicioIa">
+          <ConvenioInsertar />
+        </div>
+        <div v-else-if="showContent==='Inteligencia'" class="displayInicioIa">
+          <ConvenioInteligencia />
+        </div>
       </div>
+
+
       <div class="bottomdiv animate__animated animate__fadeInUp">
         <p>Documentación</p>
       </div>
     </div>
     <div class="rightprincipal">
       <div class="rightdiv animate__animated animate__slideInRight">
-        <a href="#id4" class="right-button"><i class="fa-solid fa-file-import" style="margin-right: 5px;"></i> Insertar Convenios</a>
-        <a href="#idInteligencia" class="right-button"><i class="fa-solid fa-brain" style="margin-right: 5px;"></i>Inteligencia Artificial</a>
-        <button class="right-button">Borrar Convenio</button>
-        <button class="right-button">Editar Convenio</button>
+
+        <a v-if="showContent!='Inicio'" class="right-button" id="button-ia" @click="toggleInicioContent"><i class="fa-solid fa-house" style="margin-right: 5px;"></i>Pagina de inicio</a>
+        <a v-if="showContent!='Insert'" class="right-button" @click="toggleInsertContent"><i class="fa-solid fa-file-import" style="margin-right: 5px;" ></i> Gestionar Convenios</a>
+        <a v-if="showContent!='Inteligencia'" class="right-button" id="button-ia" @click="toggleInteligenciaContent"><i class="fa-solid fa-brain" style="margin-right: 5px;"></i>Inteligencia Artificial</a>
+      
       </div>
     </div>
   </div>
 
-  <a href="#principal"> 
+  <a href="#principal">
     <div class="flotante-principal"><i class="fas fa-home"></i></div>
   </a>
 </template>
 
 <script>
+import ConvenioInteligencia from "../inteligencia/ConvenioInteligencia.vue";
+import ConvenioInsertar from "../main/ConvenioInsertar.vue";
+
 export default {
   data() {
     return {
       myImage: require("../../assets/logoprovincia.png"),
+      showContent: 'Inicio', // Variable de control
     };
   },
+  methods: {
+    toggleInteligenciaContent() {
+      this.showContent = 'Inteligencia';
+    },
+    toggleInsertContent() {
+      this.showContent = 'Insert';
+    },
+    toggleInicioContent() {
+      this.showContent = 'Inicio';
+    }
+  },
+  components: {
+    ConvenioInteligencia,
+    ConvenioInsertar
+  }
 };
 </script>
 
 <style scope>
-
 .flotante-principal {
   position: fixed;
   bottom: 20px;
@@ -57,7 +90,9 @@ export default {
   padding: 15px;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
 }
+
 .principal {
   margin: 0;
   width: 100%;
@@ -88,10 +123,14 @@ export default {
   border: 1px solid white;
   border-radius: 5px;
   cursor: pointer;
-  display: flex; /* Habilita Flexbox */
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center; /* Centra verticalmente */
+  display: flex;
+  /* Habilita Flexbox */
+  justify-content: center;
+  /* Centra horizontalmente */
+  align-items: center;
+  /* Centra verticalmente */
 }
+
 .right-button:hover {
   margin: 10px;
   background-color: white;
@@ -121,12 +160,11 @@ export default {
   width: 80vw;
   height: 84vh;
   display: flex;
-
   background-color: #111;
   background-image: url("../../assets/puente.png");
   justify-content: center;
   align-items: center;
-  background-size: cover; /* Adjust background size as needed */
+  background-size: cover;
   background-position: center;
   padding: 60px;
 }
@@ -152,6 +190,7 @@ export default {
   justify-content: center;
   align-items: center;
   text-decoration: none;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .centerdiv .cards h3 {
@@ -181,7 +220,7 @@ export default {
   justify-content: center;
   align-items: center;
   text-decoration: none;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .centerdiv .cards2 h3 {
@@ -192,13 +231,12 @@ export default {
 
 .centerdiv .cards:hover {
   transform: scale(1.05);
-  border: 4px solid green;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 40px rgba(0, 255, 0, 0.65);
 }
 
 .centerdiv .cards2:hover {
   transform: scale(1.05);
-  border: 4px solid green;
+  box-shadow: inset 0 0 40px rgba(0, 255, 0, 0.65);
 }
 
 .rightdiv {
@@ -218,5 +256,23 @@ export default {
   display: flex;
   background-color: #15151d;
   color: white;
+}
+
+.centerdiv .displayInicio {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  /* Centra horizontalmente */
+  align-items: center;
+  /* Centra verticalmente */
+}
+
+.centerdiv .displayInicioIa {
+  width: 100%;
+
+  justify-content: center;
+  /* Centra horizontalmente */
+  align-items: center;
+  /* Centra verticalmente */
 }
 </style>

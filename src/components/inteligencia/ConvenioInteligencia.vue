@@ -1,5 +1,5 @@
 <template>
-  <div class="inteligencia-container" id="idInteligencia">
+  <div class="inteligencia-container animate__animated animate__fadeInUp" id="idInteligencia">
     <div class="inteligencia-header">
       <h1>GEMINI AI</h1>
       <p>Total tokens usados: {{ totalTokensUsed }}</p>
@@ -13,14 +13,12 @@
       </div>
       <div class="form-group">
         <label for="pregunta">Pregunta</label>
-        <input type="text" id="pregunta" v-model="pregunta" placeholder="Ingresa tu pregunta" class="form-control" />
+        <textarea id="pregunta" v-model="pregunta" placeholder="Ingresa tu pregunta" class="form-control" />
       </div>
-      <button @click="handleGenerateText" class="btn btn-primary">
-        Realizar Consulta
-      </button>
+      <button @click="handleGenerateText" class="btn">Realizar Consulta</button>
     </div>
 
-    <div class="inteligencia-resultados" v-if="generatedText || textoAuxiliar">
+    <div class="inteligencia-resultados" v-if="generatedText">
       <h5>{{ generatedText }}</h5>
     </div>
   </div>
@@ -72,11 +70,11 @@ export default {
 
 <style scoped>
 .inteligencia-container {
-  max-width: 50%;
-  height: 60vh;
+  max-width: 100%;
+  height: 70vh;
   margin: 20px auto;
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: #000000bc;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -89,15 +87,21 @@ export default {
 
 .inteligencia-header h1 {
   font-size: 24px;
-  color: #343a40;
+  color: #ffffff;
 }
 
 .inteligencia-form {
   margin-bottom: 20px;
+  justify-content: center;
+  /* Centra horizontalmente */
+  align-items: center;
+  /* Centra verticalmente */
+  place-items: center;
 }
 
 .form-group {
   margin-bottom: 15px;
+  width: 80%;
 }
 
 .form-group label {
@@ -114,8 +118,7 @@ export default {
 }
 
 .btn {
-  display: block;
-  width: 100%;
+  
   padding: 10px;
   background-color: #007bff;
   color: white;
@@ -131,6 +134,7 @@ export default {
 .inteligencia-resultados {
   text-align: center;
   padding: 10px;
+  min-height: 20vh;
   background-color: #e9ecef;
   border-radius: 4px;
 }
