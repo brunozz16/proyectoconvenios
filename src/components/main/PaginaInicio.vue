@@ -1,5 +1,5 @@
 <template>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <div class="principal" id="principal">
     <div class="leftprincipal">
       <div class="topdiv animate__animated animate__slideInLeft">
@@ -21,8 +21,8 @@
     </div>
     <div class="rightprincipal">
       <div class="rightdiv animate__animated animate__slideInRight">
-        <a href="#id4" class="right-button"><i class="fas fa-file-contract" style="margin-right: 5px;"></i> Insertar Convenios</a>
-        <a href="#idInteligencia" class="right-button">Inteligencia Artificial</a>
+        <a href="#id4" class="right-button"><i class="fa-solid fa-file-import" style="margin-right: 5px;"></i> Insertar Convenios</a>
+        <a href="#idInteligencia" class="right-button"><i class="fa-solid fa-brain" style="margin-right: 5px;"></i>Inteligencia Artificial</a>
         <button class="right-button">Borrar Convenio</button>
         <button class="right-button">Editar Convenio</button>
       </div>

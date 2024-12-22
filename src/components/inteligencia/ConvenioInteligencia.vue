@@ -8,23 +8,12 @@
     <div class="inteligencia-form">
       <div class="form-group">
         <label for="nroconvenio">Número de Convenio</label>
-        <input
-          type="number"
-          id="nroconvenio"
-          v-model="prompt"
-          placeholder="Ingresa el número de convenio"
-          class="form-control"
-        />
+        <input type="number" id="nroconvenio" v-model="prompt" placeholder="Ingresa el número de convenio"
+          class="form-control" />
       </div>
       <div class="form-group">
         <label for="pregunta">Pregunta</label>
-        <input
-          type="text"
-          id="pregunta"
-          v-model="pregunta"
-          placeholder="Ingresa tu pregunta"
-          class="form-control"
-        />
+        <input type="text" id="pregunta" v-model="pregunta" placeholder="Ingresa tu pregunta" class="form-control" />
       </div>
       <button @click="handleGenerateText" class="btn btn-primary">
         Realizar Consulta
@@ -33,7 +22,6 @@
 
     <div class="inteligencia-resultados" v-if="generatedText || textoAuxiliar">
       <h5>{{ generatedText }}</h5>
-      <h4>{{ textoAuxiliar }}</h4>
     </div>
   </div>
 </template>
@@ -48,9 +36,9 @@ export default {
       prompt: "",
       pregunta: "",
       generatedText: "Esperando consulta...",
-      textoAuxiliar: "...",
       totalTokensUsed: 0,
       arregloconvenios: [],
+      prueba:""
     };
   },
   async mounted() {
@@ -63,18 +51,20 @@ export default {
         return;
       }
 
-      if (!this.arregloconvenios.includes(Number(this.prompt))) {
+      if (!this.arregloconvenios.some(convenio => convenio.numero === Number(this.prompt))) {
         this.generatedText = "Convenio no encontrado";
         alert("El convenio no está registrado en el sistema");
         return;
       }
-
+      
       try {
         const pdf = await convenioService.getConvenioPDF(this.prompt);
         this.generatedText = await aiClient.generateResponse(pdf, this.pregunta);
+        
       } catch (error) {
         this.generatedText = "Error al procesar la consulta";
       }
+      
     },
   },
 };
@@ -83,7 +73,7 @@ export default {
 <style scoped>
 .inteligencia-container {
   max-width: 50%;
-  height: 50vh;
+  height: 60vh;
   margin: 20px auto;
   padding: 20px;
   background-color: #f8f9fa;

@@ -12,6 +12,21 @@ export const fetchCantidadConvenios = async () => {
   return response.data[0]["COUNT(*)"];
 };
 
+export const getConvenioPDF = async (id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/convenios/${id}`);
+    
+    const convenio = response.data[0];
+    //console.log(convenio?.pdf+" holaa");
+    return convenio?.pdf || 'PDF no encontrado';
+    
+  } catch (error) {
+    console.error('Error al obtener el PDF:', error);
+    throw new Error('No se pudo obtener el PDF');
+  }
+};
+
+
 export const buscarConvenios = async (criterio) => {
   const response = await axios.get(`${BASE_URL}/busqueda`, {
     params: { busqueda: criterio },
@@ -22,4 +37,5 @@ export default {
   fetchConvenios,
   fetchCantidadConvenios,
   buscarConvenios,
+  getConvenioPDF
 };
