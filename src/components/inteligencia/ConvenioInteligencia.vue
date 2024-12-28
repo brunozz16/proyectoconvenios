@@ -1,11 +1,11 @@
 <template>
-  <div class="inteligencia-container animate__animated animate__fadeInUp" id="idInteligencia">
+  <div v-if="!cargando" class="inteligencia-container animate__animated animate__fadeInUp" id="idInteligencia">
     <div class="inteligencia-header">
       <h1>GEMINI AI</h1>
       <p>Total tokens usados: {{ totalTokensUsed }}</p>
     </div>
 
-    <div class="inteligencia-form">
+    <div  class="inteligencia-form">
       <div class="form-group">
         <label for="nroconvenio">Número de Convenio</label>
         <input type="number" id="nroconvenio" v-model="prompt" placeholder="Ingresa el número de convenio"
@@ -17,10 +17,17 @@
       </div>
       <button @click="handleGenerateText" class="btn">Realizar Consulta</button>
     </div>
+   
 
     <div class="inteligencia-resultados" v-if="generatedText">
       <h5>{{ generatedText }}</h5>
     </div>
+  </div>
+
+  <div v-else class="inteligencia-container">
+      <div class="inteligencia-header">
+        <h1>CARGANDO...</h1>
+      </div>
   </div>
 </template>
 
@@ -36,34 +43,38 @@ export default {
       generatedText: "Esperando consulta...",
       totalTokensUsed: 0,
       arregloconvenios: [],
-      prueba:""
+      prueba: "",
+      cargando:false
     };
   },
   async mounted() {
     this.arregloconvenios = await convenioService.fetchConvenios();
   },
   methods: {
-    async handleGenerateText() {
+    async handleGenerateText() { 
+      //valida que los campos esten llenos
       if (!this.prompt || !this.pregunta) {
         alert("Por favor, llena todos los campos");
         return;
       }
-
-      if (!this.arregloconvenios.some(convenio => convenio.numero === Number(this.prompt))) {
+      //valida que el convenio este en la bd
+      if (!this.arregloconvenios.some(convenio => convenio.numero === Number(this.prompt))) { 
         this.generatedText = "Convenio no encontrado";
-        alert("El convenio no está registrado en el sistema");
+        alert("El convenio "+Number(this.prompt)+" no está registrado en el sistema");
         return;
       }
-      
+      // genera la respuesta mediante IA
       try {
+        this.cargando=true;
         const pdf = await convenioService.getConvenioPDF(this.prompt);
         this.generatedText = await aiClient.generateResponse(pdf, this.pregunta);
-        
+        this.totalTokensUsed+=1;
+        this.cargando=false;
       } catch (error) {
         this.generatedText = "Error al procesar la consulta";
       }
-      
     },
+
   },
 };
 </script>
@@ -118,7 +129,7 @@ export default {
 }
 
 .btn {
-  
+
   padding: 10px;
   background-color: #007bff;
   color: white;

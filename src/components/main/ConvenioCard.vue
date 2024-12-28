@@ -4,22 +4,15 @@
   <link  
  href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <div class="card_conv">
+ <div class="card_conv" @click="onAccess">
     <div class="state_conv" :style="{ backgroundColor: stateColor }"></div>
-    <h3>{{ convenioTitle }}</h3>
-    <p>{{ convenioContent }}</p>
-    <button @click="showModal = true" class="btn_conv" >ACCEDER</button>
-  </div>
-
-  <div class="modal-overlay" v-if="showModal">
-    <div class="animate__animated animate__backInLeft modal1">
-      <div class="modalx1">
-        <h1>{{ convenioTitle }}</h1>
-      </div>
-      <div class="modalx2">{{ convenioContent }}</div>
-      <div class="modalx3"><button class="btnmodal" @click="showModal = false">CERRAR</button></div>
+    <div class="card_contenido_description">
+      <h3>{{ convenioTitle }}</h3>
+      <p>{{ convenioContent }}</p>
     </div>
   </div>
+
+ 
 
 </template>
 
@@ -28,39 +21,39 @@ import { ref, computed, defineComponent } from 'vue';
 
 export default defineComponent({
   props: {
-    convenioTitle: {
-      type: String,
-      default: "vacio"
-    },
-    convenioContent: {
-      type: String,
-      default: "vacio"
-    },
-    state: {
-      type: String,
-      default: "prendido"
-    }
+    convenioTitle: { type: String, default: "vacio" },
+    convenioContent: { type: String, default: "vacio" },
+    state: { type: String, default: "prendido" },
   },
-  setup(props) {
-    // CONSTANTES
+  setup(props, { emit }) {
     const stateOptions = {
       prendido: "green",
-      apagado: "red"
+      apagado: "red",
     };
     const showModal = ref(false);
-    // FUNCIONES
     const stateColor = computed(() => stateOptions[props.state] || "red");
+
+    const onAccess = () => {
+      showModal.value = true;
+      emit("access", props.convenioTitle); // Emitir el evento con el título del convenio
+    };
 
     return {
       stateColor,
-      showModal
+      showModal,
+      onAccess,
     };
-  }
+  },
 });
 </script>
 
 <style scoped>
+.card_contenido_description{
+  text-align: center;
+  margin-top: 10px;
+}
 .card_conv {
+  height: 90%;
   padding: 10px;
   background-color: #212F3C;
   color: aliceblue;
@@ -68,6 +61,7 @@ export default defineComponent({
   border: 1px solid black;
   margin: 15px;
   font-family: 'Inter', sans-serif;
+  cursor: pointer;
 }
 
 .card_conv:hover {
@@ -81,6 +75,7 @@ export default defineComponent({
   background-color: black;
 }
 .modal-overlay {
+  width: 100%;
   height: 100vh;
   position: fixed;
   top: 0;
@@ -128,9 +123,5 @@ export default defineComponent({
   padding: 10px;
   border-radius: 0px;
 }
-.btn_conv{
-  background-color:  #58d68d ;
-  padding: 10px;
-  border: none;
-}
+
 </style>

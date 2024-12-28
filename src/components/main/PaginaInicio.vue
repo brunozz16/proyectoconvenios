@@ -2,6 +2,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
   <div class="principal" id="principal">
     <div class="leftprincipal">
       <div class="topdiv animate__animated animate__slideInLeft">
@@ -28,39 +29,52 @@
         </div>
       </div>
 
-
       <div class="bottomdiv animate__animated animate__fadeInUp">
-        <p>Documentación</p>
+        <p style="color: green;" v-if="convenios.length"><i class="fa-solid fa-circle-check"></i>Base de datos conectada</p>
+        <p style="color: brown;" v-else><i class="fa-solid fa-triangle-exclamation"></i>Base de datos desconectada</p>
       </div>
+
     </div>
     <div class="rightprincipal">
-      <div class="rightdiv animate__animated animate__slideInRight">
-
-        <a v-if="showContent!='Inicio'" class="right-button" id="button-ia" @click="toggleInicioContent"><i class="fa-solid fa-house" style="margin-right: 5px;"></i>Pagina de inicio</a>
-        <a v-if="showContent!='Insert'" class="right-button" @click="toggleInsertContent"><i class="fa-solid fa-file-import" style="margin-right: 5px;" ></i> Gestionar Convenios</a>
-        <a v-if="showContent!='Inteligencia'" class="right-button" id="button-ia" @click="toggleInteligenciaContent"><i class="fa-solid fa-brain" style="margin-right: 5px;"></i>Inteligencia Artificial</a>
-      
+      <div  class="rightdiv animate__animated animate__slideInRight">
+        
+        <a v-if="showContent!='Inicio' && convenios.length" class="right-button" id="button-ia" @click="toggleInicioContent"><i class="fa-solid fa-house" style="margin-right: 5px;"></i>Pagina de inicio</a>
+        <a v-if="showContent!='Insert' && convenios.length" class="right-button" @click="toggleInsertContent"><i class="fa-solid fa-file-import" style="margin-right: 5px;" ></i> Gestionar Convenios</a>
+        <a v-if="showContent!='Inteligencia' && convenios.length" class="right-button" id="button-ia" @click="toggleInteligenciaContent"><i class="fa-solid fa-brain" style="margin-right: 5px;"></i>Inteligencia Artificial</a>
+     
       </div>
     </div>
-  </div>
-
-  <a href="#principal">
+    <a href="#principal">
     <div class="flotante-principal"><i class="fas fa-home"></i></div>
   </a>
+  </div>
+  
 </template>
 
 <script>
 import ConvenioInteligencia from "../inteligencia/ConvenioInteligencia.vue";
 import ConvenioInsertar from "../main/ConvenioInsertar.vue";
+import { fetchConvenios } from "@/services/convenioService";
 
 export default {
   data() {
     return {
       myImage: require("../../assets/logoprovincia.png"),
       showContent: 'Inicio', // Variable de control
+      convenios:[]
     };
   },
+  mounted(){
+    this.initializeData();
+  },
   methods: {
+    async initializeData() {
+      try {
+        this.convenios = await fetchConvenios();
+      } catch (error) {
+        console.error("Error al inicializar datos:", error);
+      }
+    },
     toggleInteligenciaContent() {
       this.showContent = 'Inteligencia';
     },
@@ -79,6 +93,14 @@ export default {
 </script>
 
 <style scope>
+i{
+  margin: 5px;
+}
+.banner-carga{
+  width: 100%;
+  height: 100vh;
+  background-color: rgb(111, 14, 14);
+}
 .flotante-principal {
   position: fixed;
   bottom: 20px;

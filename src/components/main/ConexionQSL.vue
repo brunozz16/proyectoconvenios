@@ -9,6 +9,7 @@
       <header class="convenios-header">
         <h1>Convenios Disponibles</h1>
         <p>Total de convenios: <strong>{{ totalConvenios }}</strong></p>
+        <p>convenio seleccionado: {{ this.selectedConvenio }}</p>
       </header>
 
       <div class="convenios-search">
@@ -21,12 +22,24 @@
       <section class="convenios-list">
         <div v-for="convenio in resultados" :key="convenio.numero" class="convenio-item">
           <ConvenioCard :convenioTitle="convenio.numero" :convenioContent="convenio.descripcion"
-            :state="convenio.estado" />
+            :state="convenio.estado" @access="updateSelectedConvenio" />
         </div>
       </section>
+
     </div>
 
-    <div v-else class="loading-container">
+    <div class="modal-overlay" v-if="showModal">
+    <div class="animate__animated animate__backInLeft modal1">
+      <div class="modalx3"><button class="btnmodal" @click="showModal = false">x</button></div>
+      <div class="modalx1">
+        <h1>{{ selectedConvenio }}</h1>
+      </div>
+      <div class="modalx2">{{ textConvenio }}</div>
+      
+    </div>
+  </div>
+
+    <div v-if="convenios.length==0" class="loading-container">
       <div class="spinner-wrapper">
         <span class="spinner"></span>
         <p>Cargando convenios, por favor espera...</p>
@@ -38,7 +51,7 @@
 
 <script>
 import ConvenioCard from "./ConvenioCard.vue";
-import { fetchConvenios, fetchCantidadConvenios, buscarConvenios } from "@/services/convenioService";
+import { fetchConvenios,fetchConvenioId, fetchCantidadConvenios, buscarConvenios } from "@/services/convenioService";
 
 export default {
   components: {
@@ -52,6 +65,9 @@ export default {
       busquedados: "",
       resultados: [],
       boton: false,
+      selectedConvenio: null,
+      textConvenio:"",
+      showModal:false
     };
   },
   mounted() {
@@ -81,6 +97,12 @@ export default {
       } catch (error) {
         console.error("Error en búsqueda:", error);
       }
+    },
+    async updateSelectedConvenio(numero) {
+      this.selectedConvenio = numero;
+      this.showModal = true;
+      this.textConvenio = await fetchConvenioId(numero);
+      console.log('Convenio seleccionado:', numero); // Confirmación en consola
     }
   }
 };
@@ -92,6 +114,46 @@ body {
   font-family: "Inter", sans-serif;
   background-color: #f7f7f7;
   margin: 0;
+}
+.modal-overlay {
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 101;
+  background-color: rgba(0, 0, 0, 0.912);
+  
+}
+.modal1 {
+  position: relative;
+  width: 50%;
+  height: 50vh;
+  color: #17202A;
+  background-color: aliceblue;
+  text-align: center;
+  top: 25%;
+  left: 25%;
+  border-radius: 0px;
+  font-family: 'Inter', sans-serif;
+  padding: 15px;
+}
+.modalx3{
+width: 100%;
+display: flex;
+  justify-content: flex-end; /* Alinea los elementos al final (derecha) */
+
+}
+.btnmodal {
+  /* Estilos para el botón */
+  font-size: 2em; /* Aumenta el tamaño de la cruz */
+  border: none;
+  background: none;
+  color: red;
+  cursor: pointer;
+  padding: 5px 10px; /* Ajusta el padding */
 }
 
 .convenios-header {
@@ -126,8 +188,7 @@ body {
 }
 
 .convenio-item {
-  background: white;
-  border: 1px solid #e0e0e0;
+  background-image: linear-gradient(to bottom, rgba(54, 54, 54, 0.509) 10%, #15151d 90%);
   border-radius: 10px;
   padding: 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
